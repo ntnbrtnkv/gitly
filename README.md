@@ -35,3 +35,9 @@ bun run lint
 ```bash
 bun run lint:fix
 ```
+
+### Build executable file
+
+```bash
+bun run build
+```
