@@ -1,5 +1,7 @@
 const { default: api } = require('./lib/api.ts');
 
+const SUPPORTED_COMMANDS = ['\tinit - initialize repository'];
+
 const parseOptions = (argv: string[]) => {
   let name: any;
   return argv.reduce(
@@ -28,7 +30,9 @@ const runCli = (argv: string[]) => {
   const commandName = opts._[2];
 
   if (commandName === undefined) {
-    throw new Error('you must specify a Gitly command to run');
+    throw new Error(
+      'you must specify a Gitly command to run\n\nCommands:\n' + SUPPORTED_COMMANDS.join('\n')
+    );
   } else {
     const commandFnName = commandName.replace(/-/g, '_');
     // @ts-ignore
@@ -48,13 +52,11 @@ const runCli = (argv: string[]) => {
   }
 };
 
-if (require.main === module) {
-  try {
-    const result = runCli(process.argv);
-    if (result !== undefined) {
-      console.log(result);
-    }
-  } catch (e: any) {
-    console.error(e.toString());
+try {
+  const result = runCli(process.argv);
+  if (result !== undefined) {
+    console.log(result);
   }
+} catch (e: any) {
+  console.error(e.toString());
 }
