@@ -1,6 +1,12 @@
 const { default: api } = require('./lib/api.ts');
 
-const SUPPORTED_COMMANDS = ['\tinit - initialize repository'];
+const SUPPORTED_COMMANDS = [
+  'start a working area',
+  '\tinit\tCreate an empty Git repository',
+  '',
+  'work on the current change',
+  '\tadd\tAdd file contents to the index',
+];
 
 const parseOptions = (argv: string[]) => {
   let name: any;
@@ -30,9 +36,7 @@ const runCli = (argv: string[]) => {
   const commandName = opts._[2];
 
   if (commandName === undefined) {
-    throw new Error(
-      'you must specify a Gitly command to run\n\nCommands:\n' + SUPPORTED_COMMANDS.join('\n')
-    );
+    throw new Error('you must specify a Gitly command to run\n\n' + SUPPORTED_COMMANDS.join('\n'));
   } else {
     const commandFnName = commandName.replace(/-/g, '_');
     // @ts-ignore
@@ -47,7 +51,7 @@ const runCli = (argv: string[]) => {
       }
 
       // @ts-ignore
-      return fn(commandArgs.concat(opts));
+      return fn(...commandArgs.concat(opts));
     }
   }
 };
