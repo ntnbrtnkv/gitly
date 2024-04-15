@@ -4,7 +4,8 @@ Implementing subset of [git](https://git-scm.com/) for educational purpose. Base
 
 Supported commands:
 
-- [x] `init` - initialize repository
+- [x] `init` - initialize empty repository
+- [x] `add` - add files to the index
 
 ## Contributing
 

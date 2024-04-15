@@ -13,3 +13,18 @@ export const setIn = (obj: Record<string, any>, arr: any[]) => {
 export const isString = (o: unknown) => {
   return typeof o === 'string';
 };
+
+export const lines = (s: string) => {
+  return s.split('\n').filter((l) => l !== '');
+};
+
+export const hash = (s: string) => {
+  let hashInt = 0;
+
+  for (let i = 0; i < s.length; i++) {
+    hashInt = hashInt * 31 + s.charCodeAt(i);
+    hashInt = hashInt | 0;
+  }
+
+  return Math.abs(hashInt).toString(16);
+};

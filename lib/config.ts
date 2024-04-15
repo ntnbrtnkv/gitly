@@ -67,4 +67,12 @@ export const objToStr = (obj: any) => {
     .join('\n');
 };
 
-export const isBare = () => {};
+export const isBare = () => {
+  return read().core[''].bare === 'true';
+};
+
+export const assertNotBare = () => {
+  if (isBare()) {
+    throw new Error('this operation must be run in a work tree');
+  }
+};
