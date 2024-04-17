@@ -6,6 +6,8 @@ export const GITLY_DIR = '.gitly';
 export const CONFIG_FILE = 'config';
 export const INDEX_FILE = 'index';
 export const OBJECTS_DIR = 'objects';
+export const FETCH_HEAD_FILE = 'FETCH_HEAD';
+export const HEAD_FILE = 'HEAD';
 
 export const read = (path: string | undefined) => {
   if (path && fs.existsSync(path)) {
@@ -89,6 +91,22 @@ export const write = (path: string, content: string) => {
 };
 
 export const isInGitPath = (path: string) => {
-  console.log(path, GITLY_DIR);
   return path.includes(GITLY_DIR);
+};
+
+export const flattenNestedTree = (tree: object, obj?: object, prefix?: string) => {
+  if (obj === undefined) {
+    return flattenNestedTree(tree, {}, '');
+  }
+
+  Object.keys(tree).forEach((dir: string) => {
+    const path = nodePath.join(prefix, dir);
+    if (util.isString(tree[dir])) {
+      obj[path] = tree[dir];
+    } else {
+      flattenNestedTree(tree[dir], obj, path);
+    }
+  });
+
+  return obj;
 };

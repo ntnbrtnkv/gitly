@@ -6,6 +6,7 @@ const SUPPORTED_COMMANDS = [
   '',
   'work on the current change',
   '\tadd\tAdd file contents to the index',
+  '\trm\tRemove files from the working tree and from the index',
 ];
 
 const parseOptions = (argv: string[]) => {
