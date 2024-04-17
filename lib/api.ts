@@ -2,6 +2,8 @@ import * as fs from 'node:fs';
 import * as files from './files.ts';
 import * as config from './config.ts';
 import * as index from './index.ts';
+import * as util from './util.ts';
+import * as diff from './diff.ts';
 
 const api = {
   init(opts: Record<string, any> = {}) {
@@ -30,7 +32,7 @@ const api = {
     );
   },
 
-  add(path, _) {
+  add(path: string, _: any) {
     files.assertInRepo();
     config.assertNotBare();
 
@@ -44,6 +46,29 @@ const api = {
           add: true,
         });
       });
+    }
+  },
+
+  rm(path: string, opts: { f?: boolean; r?: boolean } = {}) {
+    files.assertInRepo();
+    config.assertNotBare();
+
+    const filesToRm = index.matchingFiles(path);
+
+    if (opts.f) {
+      throw new Error('unsupported');
+    } else if (filesToRm.length === 0) {
+      throw new Error(files.pathFromRepoRoot(path) + ' did not match any files');
+    } else if (fs.existsSync(path) && fs.statSync(path).isDirectory() && !opts.r) {
+      throw new Error('not removing ' + path + ' recursively without -r');
+    } else {
+      const changesToRm = util.intersection(diff.addedOrModifiedFiles(), filesToRm);
+      if (changesToRm.length > 0) {
+        throw new Error('these files have changes:\n' + changesToRm.join('\n') + '\n');
+      } else {
+        filesToRm.map(files.workingCopyPath).filter(fs.existsSync).forEach(fs.unlinkSync);
+        filesToRm.forEach((p) => api.update_index(p, { remove: true }));
+      }
     }
   },
 

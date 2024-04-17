@@ -18,6 +18,16 @@ export const lines = (s: string) => {
   return s.split('\n').filter((l) => l !== '');
 };
 
+export const intersection = (a: any[], b: any[]) => {
+  return a.filter((e) => b.indexOf(e) !== -1);
+};
+
+export const unique = (arr: any[]) => {
+  return arr.reduce(function (a, p) {
+    return a.indexOf(p) === -1 ? a.concat(p) : a;
+  }, []);
+};
+
 export const hash = (s: string) => {
   let hashInt = 0;
 

@@ -58,3 +58,29 @@ export const writeNonConflict = (path: string, content: string) => {
   writeRm(path);
   writeStageEntry(path, 0, content);
 };
+
+export const toc = () => {
+  const idx = read();
+  return Object.keys(idx).reduce((acc, k) => {
+    return util.setIn(acc, [k.split(',')[0], idx[k]]);
+  }, {});
+};
+
+export const matchingFiles = (pathSpec: string) => {
+  const searchPath = files.pathFromRepoRoot(pathSpec);
+  return Object.keys(toc()).filter((p) => p.match('^' + searchPath.replace(/\\/g, '\\\\')));
+};
+
+export const workingCopyToc = () => {
+  return Object.keys(read())
+    .map(function (k) {
+      return k.split(',')[0];
+    })
+    .filter(function (p) {
+      return fs.existsSync(files.workingCopyPath(p));
+    })
+    .reduce(function (idx, p) {
+      idx[p] = util.hash(files.read(files.workingCopyPath(p)));
+      return idx;
+    }, {});
+};
