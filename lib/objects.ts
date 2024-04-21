@@ -57,3 +57,28 @@ export const exists = (objectHash: string) => {
     fs.existsSync(nodePath.join(files.gitPath(), files.OBJECTS_DIR, objectHash))
   );
 };
+
+export const writeTree = (tree: object) => {
+  const treeObj =
+    Object.keys(tree)
+      .map((key) => {
+        if (util.isString(tree[key])) {
+          return `blob ${tree[key]} ${key}`;
+        } else {
+          return `tree ${writeTree(tree[key])} ${key}`;
+        }
+      })
+      .join('\n') + '\n';
+
+  return write(treeObj);
+};
+
+export const writeCommit = (
+  treeHash: string,
+  message: string | undefined,
+  parentHashes: string[]
+) => {
+  return write(
+    `commit ${treeHash}\n${parentHashes.map((h) => `parent ${h}\n`).join('')}Date:  ${new Date().toString()}\n\n    ${message}\n`
+  );
+};

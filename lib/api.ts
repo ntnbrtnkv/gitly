@@ -4,6 +4,9 @@ import * as config from './config.ts';
 import * as index from './index.ts';
 import * as util from './util.ts';
 import * as diff from './diff.ts';
+import * as objects from './objects.ts';
+import * as refs from './refs.ts';
+import * as merge from './merge.ts';
 
 const api = {
   init(opts: Record<string, any> = {}) {
@@ -69,6 +72,71 @@ const api = {
         filesToRm.map(files.workingCopyPath).filter(fs.existsSync).forEach(fs.unlinkSync);
         filesToRm.forEach((p) => api.update_index(p, { remove: true }));
       }
+    }
+  },
+
+  write_tree() {
+    files.assertInRepo();
+    return objects.writeTree(files.nestFlatTree(index.toc()));
+  },
+
+  commit(opts: { m?: string } = {}) {
+    files.assertInRepo();
+    config.assertNotBare();
+
+    const treeHash = api.write_tree();
+
+    const headDesc = refs.isHeadDetached() ? 'detached HEAD' : refs.headBranchName();
+
+    if (
+      refs.hash(files.HEAD_FILE) !== undefined &&
+      treeHash === objects.treeHash(objects.read(refs.hash(files.HEAD_FILE)))
+    ) {
+      throw new Error('# On ' + headDesc + '\nnothing to commit, working directory clean');
+    } else {
+      const conflictedPaths = index.conflictedPaths();
+      if (merge.isMergeInProgress() && conflictedPaths > 0) {
+        throw new Error(
+          conflictedPaths
+            .map(function (p) {
+              return 'U ' + p;
+            })
+            .join('\n') + '\ncannot commit because you have unmerged files\n'
+        );
+      } else {
+        const m = merge.isMergeInProgress()
+          ? files.read(files.gitPath(files.MERGE_MSG_FILE))
+          : opts.m;
+
+        const commitHash = objects.writeCommit(treeHash, m, refs.commitParentHashes());
+
+        api.update_ref(files.HEAD_FILE, commitHash);
+
+        if (merge.isMergeInProgress()) {
+          fs.unlinkSync(files.gitPath(files.MERGE_MSG_FILE));
+          refs.rm(files.MERGE_HEAD_FILE);
+          return 'Merge made by the three-way strategy';
+        } else {
+          return `[${headDesc} ${commitHash}] ${m}`;
+        }
+      }
+    }
+  },
+
+  update_ref(refToUpdate: string, refToUpdateTo: string) {
+    files.assertInRepo();
+
+    const hash = refs.hash(refToUpdateTo);
+
+    if (!objects.exists(hash)) {
+      throw new Error(refToUpdateTo + ' not a valid SHA1');
+    } else if (!refs.isRef(refToUpdate)) {
+      throw new Error('cannot lock the ref ' + refToUpdate);
+    } else if (objects.type(objects.read(hash)) !== 'commit') {
+      const branch = refs.terminalRef(refToUpdate);
+      throw new Error(branch + ' cannot refer to non-commit object ' + hash + '\n');
+    } else {
+      refs.write(refs.terminalRef(refToUpdate), hash);
     }
   },
 

@@ -3,7 +3,7 @@ import * as files from './files.ts';
 import * as util from './util.ts';
 import * as objects from './objects.ts';
 
-export const key = (path: string, stage: string | number) => {
+export const key = (path: string, stage: string | number | undefined) => {
   return `${path},${stage}`;
 };
 
@@ -14,7 +14,9 @@ export const read = () => {
     .lines(fs.existsSync(indexFilePath) ? files.read(indexFilePath) : '\n')
     .reduce((idx, blobSrt) => {
       const blobData = blobSrt.split(/ /);
-      idx[key(blobData[0], blobData[1])] = blobData[2];
+      const ref = blobData.pop();
+      const stage = blobData.pop();
+      idx[key(blobData.join(' '), stage)] = ref;
       return idx;
     }, {});
 };
@@ -83,4 +85,16 @@ export const workingCopyToc = () => {
       idx[p] = util.hash(files.read(files.workingCopyPath(p)));
       return idx;
     }, {});
+};
+
+export const keyPieces = (key: string) => {
+  const pieces = key.split(/,/);
+  return { path: pieces[0], stage: parseInt(pieces[1]) };
+};
+
+export const conflictedPaths = () => {
+  const idx = read();
+  return Object.keys(idx)
+    .filter((k) => keyPieces(k).stage === 2)
+    .map((k) => keyPieces(k).path);
 };

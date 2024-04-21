@@ -7,6 +7,9 @@ const SUPPORTED_COMMANDS = [
   'work on the current change',
   '\tadd\tAdd file contents to the index',
   '\trm\tRemove files from the working tree and from the index',
+  '',
+  'grow, mark and tweak your common history',
+  '\tcommit\tRecord changes to the repository',
 ];
 
 const parseOptions = (argv: string[]) => {

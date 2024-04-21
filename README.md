@@ -7,6 +7,7 @@ Supported commands:
 - [x] `init` - initialize empty repository
 - [x] `add` - add files to the index
 - [x] `rm` - remove files from working tree and index
+- [x] `commit` - record changes to the repository
 
 ## Contributing
 
