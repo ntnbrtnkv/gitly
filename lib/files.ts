@@ -8,6 +8,8 @@ export const INDEX_FILE = 'index';
 export const OBJECTS_DIR = 'objects';
 export const FETCH_HEAD_FILE = 'FETCH_HEAD';
 export const HEAD_FILE = 'HEAD';
+export const MERGE_MSG_FILE = 'MERGE_MSG';
+export const MERGE_HEAD_FILE = 'MERGE_HEAD';
 
 export const read = (path: string | undefined) => {
   if (path && fs.existsSync(path)) {
@@ -109,4 +111,10 @@ export const flattenNestedTree = (tree: object, obj?: object, prefix?: string) =
   });
 
   return obj;
+};
+
+export const nestFlatTree = (obj: object) => {
+  return Object.keys(obj).reduce((tree, path) => {
+    return util.setIn(tree, path.split(nodePath.sep).concat(obj[path]));
+  }, {});
 };
