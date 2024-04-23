@@ -7,6 +7,7 @@ import * as diff from './diff.ts';
 import * as objects from './objects.ts';
 import * as refs from './refs.ts';
 import * as merge from './merge.ts';
+import * as status from './status.ts';
 
 const api = {
   init(opts: Record<string, any> = {}) {
@@ -78,6 +79,12 @@ const api = {
   write_tree() {
     files.assertInRepo();
     return objects.writeTree(files.nestFlatTree(index.toc()));
+  },
+
+  status() {
+    files.assertInRepo();
+    config.assertNotBare();
+    return status.toString();
   },
 
   commit(opts: { m?: string } = {}) {

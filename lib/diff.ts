@@ -40,7 +40,7 @@ export const tocDiff = (receiver?: object, giver?: object, base?: object) => {
 
   base = base || receiver;
 
-  const paths = Object.keys(receiver).concat(Object.keys(base)).concat(Object.keys(base));
+  const paths = Object.keys(receiver).concat(Object.keys(base)).concat(Object.keys(giver));
 
   return util.unique(paths).reduce((idx, p) => {
     return util.setIn(idx, [
@@ -71,4 +71,10 @@ export const addedOrModifiedFiles = () => {
   return Object.keys(wc).filter((p) => {
     return wc[p] !== FILE_STATUS.DELETE;
   });
+};
+
+export const diff = (hash1?: string, hash2?: string) => {
+  const a = hash1 === undefined ? index.toc() : objects.commitToc(hash1);
+  const b = hash2 === undefined ? index.workingCopyToc() : objects.commitToc(hash2);
+  return tocDiff(a, b);
 };

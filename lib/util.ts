@@ -23,7 +23,7 @@ export const intersection = (a: any[], b: any[]) => {
 };
 
 export const unique = (arr: any[]) => {
-  return arr.reduce(function (a, p) {
+  return arr.reduce(function (a: any[], p: any) {
     return a.indexOf(p) === -1 ? a.concat(p) : a;
   }, []);
 };
@@ -37,4 +37,10 @@ export const hash = (s: string) => {
   }
 
   return Math.abs(hashInt).toString(16);
+};
+
+export const flatten = (arr: any) => {
+  return arr.reduce(function (a, e) {
+    return a.concat(e instanceof Array ? flatten(e) : e);
+  }, []);
 };
