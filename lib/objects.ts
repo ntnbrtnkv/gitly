@@ -40,8 +40,8 @@ export const fileTree = (treeHash: string, tree?: object) => {
   }
 
   util.lines(read(treeHash)).forEach((line) => {
-    const lineTokens = line.split(/ /);
-    tree[lineTokens[2]] = lineTokens[0] === 'tree' ? fileTree(lineTokens[1], {}) : lineTokens[1];
+    const [type, path, ...lineTokens] = line.split(/ /);
+    tree[lineTokens.join(' ')] = type === 'tree' ? fileTree(path, {}) : path;
   });
 
   return tree;

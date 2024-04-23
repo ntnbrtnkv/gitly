@@ -61,7 +61,7 @@ export const hash = (refOrHash: string) => {
     if (termRef === files.FETCH_HEAD_FILE) {
       return fetchHeadBranchToMerge(headBranchName());
     } else if (exists(termRef)) {
-      files.read(files.gitPath(termRef));
+      return files.read(files.gitPath(termRef));
     }
   }
 };

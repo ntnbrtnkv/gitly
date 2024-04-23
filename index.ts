@@ -8,6 +8,9 @@ const SUPPORTED_COMMANDS = [
   '\tadd\tAdd file contents to the index',
   '\trm\tRemove files from the working tree and from the index',
   '',
+  'examine the history and state',
+  '\tstatus\tShow the working tree status',
+  '',
   'grow, mark and tweak your common history',
   '\tcommit\tRecord changes to the repository',
 ];

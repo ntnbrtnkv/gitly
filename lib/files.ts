@@ -34,7 +34,7 @@ export const gitPath = (path?: string) => {
       const gitlyPath = nodePath.join(dir, GITLY_DIR);
       if (
         fs.existsSync(configPath) &&
-        fs.statSync(configPath) &&
+        fs.statSync(configPath).isFile() &&
         read(configPath)?.match(/\[core\]/)
       ) {
         return dir;
