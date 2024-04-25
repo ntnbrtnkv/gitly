@@ -47,13 +47,7 @@ export const fileTree = (treeHash: string, tree?: object) => {
 };
 
 export const commitToc = (hash: string) => {
-  return files.flattenNestedTree(
-    fileTree(
-      treeHash(
-        read(hash)
-      )
-    )
-  );
+  return files.flattenNestedTree(fileTree(treeHash(read(hash))));
 };
 
 export const exists = (objectHash: string) => {

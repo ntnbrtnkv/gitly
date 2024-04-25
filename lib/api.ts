@@ -87,25 +87,35 @@ const api = {
     return status.toString();
   },
 
+  log(ref: string | undefined, _: any) {
+    files.assertInRepo();
+    config.assertNotBare();
+
+    const actualRef = ref || files.HEAD_FILE;
+
+    if (actualRef !== undefined && refs.hash(actualRef) === undefined) {
+      throw new Error('ambiguous argument ' + ref + ': unknown revision');
+    } else {
+      return refs.log(refs.hash(actualRef)).join('\n\n');
+    }
+  },
+
   diff(ref1: string | undefined, ref2: string | undefined, opts: {} = {}) {
     files.assertInRepo();
     config.assertNotBare();
 
     if (ref1 !== undefined && refs.hash(ref1) === undefined) {
-      throw new Error("ambiguous argument " + ref1 + ": unknown revision");
+      throw new Error('ambiguous argument ' + ref1 + ': unknown revision');
     } else if (ref2 !== undefined && refs.hash(ref2) === undefined) {
-      throw new Error("ambiguous argument " + ref2 + ": unknown revision");
+      throw new Error('ambiguous argument ' + ref2 + ': unknown revision');
     } else {
-      const nameToStatus = diff.nameStatus(
-        diff.diff(
-          refs.hash(ref1),
-          refs.hash(ref2)
-        )
-      );
+      const nameToStatus = diff.nameStatus(diff.diff(refs.hash(ref1), refs.hash(ref2)));
 
-      return Object.keys(nameToStatus)
-        .map(path => `${nameToStatus[path]} ${path}`)
-        .join('\n') + '\n';
+      return (
+        Object.keys(nameToStatus)
+          .map((path) => `${nameToStatus[path]} ${path}`)
+          .join('\n') + '\n'
+      );
     }
   },
 
