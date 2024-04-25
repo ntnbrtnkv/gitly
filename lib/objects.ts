@@ -2,7 +2,6 @@ import * as nodePath from 'node:path';
 import * as fs from 'node:fs';
 import * as files from './files.ts';
 import * as util from './util.ts';
-import * as objects from './objects.ts';
 
 export const write = (str: string) => {
   files.write(nodePath.join(files.gitPath(), files.OBJECTS_DIR, util.hash(str)), str);
@@ -48,7 +47,13 @@ export const fileTree = (treeHash: string, tree?: object) => {
 };
 
 export const commitToc = (hash: string) => {
-  return files.flattenNestedTree(objects.fileTree(objects.treeHash(objects.read(hash))));
+  return files.flattenNestedTree(
+    fileTree(
+      treeHash(
+        read(hash)
+      )
+    )
+  );
 };
 
 export const exists = (objectHash: string) => {
