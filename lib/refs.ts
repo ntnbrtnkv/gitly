@@ -66,6 +66,13 @@ export const hash = (refOrHash: string) => {
   }
 };
 
+export const parents = (ref: string) => {
+  return util
+    .lines(objects.read(ref))
+    .filter((s) => s.startsWith('parent'))
+    .map((s) => s.split('parent ')[1]);
+};
+
 export const commitParentHashes = () => {
   const headHash = hash(files.HEAD_FILE);
 
@@ -76,6 +83,20 @@ export const commitParentHashes = () => {
   } else {
     return [headHash];
   }
+};
+
+export const log = (ref: string) => {
+  const parentsLogs = parents(ref).map((hash) => log(hash));
+
+  return util.flatten([
+    [
+      `commit ${hash(ref)}`,
+      ...util
+        .lines(objects.read(ref))
+        .filter((s) => !s.startsWith('parent') && !s.startsWith('commit')),
+    ].join('\n'),
+    ...parentsLogs,
+  ]);
 };
 
 export const write = (ref: string, content: string) => {

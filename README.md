@@ -10,6 +10,7 @@ Supported commands:
 - [x] `commit` - record changes to the repository
 - [x] `status` - show the working tree status
 - [x] `diff`- show changes between commits
+- [x] `log` - show commit logs
 
 ## Contributing
 
