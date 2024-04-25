@@ -10,6 +10,7 @@ const SUPPORTED_COMMANDS = [
   '',
   'examine the history and state',
   '\tstatus\tShow the working tree status',
+  '\tdiff\tShow changes between commits, commit and working tree, etc',
   '',
   'grow, mark and tweak your common history',
   '\tcommit\tRecord changes to the repository',
