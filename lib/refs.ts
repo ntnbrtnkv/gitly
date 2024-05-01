@@ -99,6 +99,12 @@ export const log = (ref: string) => {
   ]);
 };
 
+export const localHeads = () => {
+  return fs
+    .readdirSync(nodePath.join(files.gitPath(), 'refs', 'heads'))
+    .reduce((o, n) => util.setIn(o, [n, hash(n)]), {});
+};
+
 export const write = (ref: string, content: string) => {
   if (isRef(ref)) {
     files.write(files.gitPath(nodePath.normalize(ref)), content);

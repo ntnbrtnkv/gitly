@@ -15,6 +15,7 @@ const SUPPORTED_COMMANDS = [
   '',
   'grow, mark and tweak your common history',
   '\tcommit\tRecord changes to the repository',
+  '\tbranch\tList or create branches',
 ];
 
 const parseOptions = (argv: string[]) => {
