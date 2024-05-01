@@ -100,6 +100,25 @@ const api = {
     }
   },
 
+  branch(name?: string, opts?: {}) {
+    files.assertInRepo();
+    opts = opts || {};
+
+    if (name === undefined) {
+      return (
+        Object.keys(refs.localHeads())
+          .map((branch) => (branch === refs.headBranchName() ? '* ' : '  ') + branch)
+          .join('\n') + '\n'
+      );
+    } else if (refs.hash(files.HEAD_FILE) === undefined) {
+      throw new Error(refs.headBranchName() + ' not a valid object name');
+    } else if (refs.exists(refs.toLocalRef(name))) {
+      throw new Error('A branch named ' + name + ' already exists');
+    } else {
+      api.update_ref(refs.toLocalRef(name), refs.hash(files.HEAD_FILE));
+    }
+  },
+
   diff(ref1: string | undefined, ref2: string | undefined, opts: {} = {}) {
     files.assertInRepo();
     config.assertNotBare();
