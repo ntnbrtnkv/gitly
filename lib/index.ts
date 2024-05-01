@@ -98,3 +98,7 @@ export const conflictedPaths = () => {
     .filter((k) => keyPieces(k).stage === 2)
     .map((k) => keyPieces(k).path);
 };
+
+export const tocToIndex = (toc) => {
+  return Object.keys(toc).reduce((idx, p) => util.setIn(idx, [key(p, 0), toc[p]]), {});
+};

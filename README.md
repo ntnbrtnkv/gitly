@@ -12,6 +12,7 @@ Supported commands:
 - [x] `diff`- show changes between commits
 - [x] `log` - show commit logs
 - [x] `branch` - list or create branches
+- [x] `checkout` - switch branches or restore working tree files
 
 ## Contributing
 

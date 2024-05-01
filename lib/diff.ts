@@ -2,6 +2,7 @@ import * as objects from './objects.ts';
 import * as refs from './refs.ts';
 import * as index from './index.ts';
 import * as util from './util.ts';
+import * as files from './files.ts';
 
 export const FILE_STATUS = {
   ADD: 'A',
@@ -77,4 +78,12 @@ export const diff = (hash1?: string, hash2?: string) => {
   const a = hash1 === undefined ? index.toc() : objects.commitToc(hash1);
   const b = hash2 === undefined ? index.workingCopyToc() : objects.commitToc(hash2);
   return tocDiff(a, b);
+};
+
+export const changedFilesCommitWouldOverwrite = (hash: string) => {
+  const headHash = refs.hash(files.HEAD_FILE);
+  return util.intersection(
+    Object.keys(nameStatus(diff(headHash))),
+    Object.keys(nameStatus(diff(headHash, hash)))
+  );
 };

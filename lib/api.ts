@@ -8,6 +8,7 @@ import * as objects from './objects.ts';
 import * as refs from './refs.ts';
 import * as merge from './merge.ts';
 import * as status from './status.ts';
+import * as workingCopy from './workingCopy.ts';
 
 const api = {
   init(opts: Record<string, any> = {}) {
@@ -116,6 +117,44 @@ const api = {
       throw new Error('A branch named ' + name + ' already exists');
     } else {
       api.update_ref(refs.toLocalRef(name), refs.hash(files.HEAD_FILE));
+    }
+  },
+
+  checkout(ref: string, _) {
+    files.assertInRepo();
+    config.assertNotBare();
+
+    const toHash = refs.hash(ref);
+
+    if (!objects.exists(toHash)) {
+      throw new Error(ref + ' did not match any file(s) known to Gitly');
+    } else if (objects.type(objects.read(toHash)) !== 'commit') {
+      throw new Error('reference is not a tree: ' + ref);
+    } else if (
+      ref === refs.headBranchName() ||
+      ref === files.read(files.gitPath(files.HEAD_FILE))
+    ) {
+      return 'Already on ' + ref;
+    } else {
+      const paths = diff.changedFilesCommitWouldOverwrite(toHash);
+
+      if (paths.length > 0) {
+        throw new Error('local changes would be lost\n' + paths.join('\n') + '\n');
+      } else {
+        process.chdir(files.workingCopyPath());
+
+        const isDetachingHead = objects.exists(ref);
+
+        workingCopy.write(diff.diff(refs.hash(files.HEAD_FILE), toHash));
+
+        refs.write(files.HEAD_FILE, isDetachingHead ? toHash : 'ref: ' + refs.toLocalRef(ref));
+
+        index.write(index.tocToIndex(objects.commitToc(toHash)));
+
+        return isDetachingHead
+          ? 'Note: checking out ' + toHash + '\nYou are in detached HEAD state.'
+          : 'Switched to branch ' + ref;
+      }
     }
   },
 
