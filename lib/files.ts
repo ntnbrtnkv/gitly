@@ -118,3 +118,12 @@ export const nestFlatTree = (obj: object) => {
     return util.setIn(tree, path.split(nodePath.sep).concat(obj[path]));
   }, {});
 };
+
+export const rmEmptyDirs = (path: string) => {
+  if (fs.statSync(path).isDirectory()) {
+    fs.readdirSync(path).forEach((c) => rmEmptyDirs(nodePath.join(path, c)));
+    if (fs.readdirSync(path).length === 0) {
+      fs.rmdirSync(path);
+    }
+  }
+};
